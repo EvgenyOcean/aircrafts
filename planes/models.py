@@ -2,16 +2,27 @@ from math import log10
 from uuid import uuid4
 
 from django.db import models
+from django.core.validators import MinValueValidator
 
 from .helpers.roundings import round_down, round_up
 
 
 # Create your models here.
 class Series(models.Model):
-    code = models.IntegerField("Series unique id", null=False, blank=False, unique=True)
+    code = models.PositiveIntegerField(
+        "Series unique id", null=False, blank=False, unique=True, validators=[MinValueValidator(1)]
+    )
     name = models.CharField(
         "Series name", max_length=36, null=False, unique=True, default=uuid4
     )
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                name="%(app_label)s_%(class)s_code_gte_1",
+                check=(models.Q(code__gte=1))
+            )
+        ]
 
     def __str__(self):
         return f"Series: #{self.code} | {self.name}"
@@ -25,7 +36,9 @@ class Plane(models.Model):
     name = models.CharField(
         "Plane name", max_length=36, null=False, unique=True, default=uuid4
     )
-    capacity = models.IntegerField("People capacity", null=False, blank=False)
+    capacity = models.PositiveSmallIntegerField(
+        "People capacity", null=False, blank=False
+    )
 
     series = models.ForeignKey(
         Series,
