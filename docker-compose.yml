@@ -1,0 +1,29 @@
+version: '3.2'
+
+services:
+  planesdb:
+    image: postgres
+    volumes:
+      - planesdb:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=planes
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+  planesapp:
+    build: .
+    volumes:
+      - ./:/code
+    command: bash -c "python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - POSTGRES_NAME=planesdb
+      - POSTGRES_DB=planes
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "8000:8000"
+    depends_on:
+      - planesdb
+volumes:
+  planesdb:

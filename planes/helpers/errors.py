@@ -1,0 +1,6 @@
+class PlaneReaderError(Exception):
+    def __init__(self, errs: list = []) -> None:
+        self.errs = errs
+
+class SerializingSeriesError(PlaneReaderError): ...
+class SerializingPlanesError(PlaneReaderError): ...
