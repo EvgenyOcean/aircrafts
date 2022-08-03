@@ -2,9 +2,10 @@ from abc import ABC, abstractmethod
 from typing import IO, NoReturn
 
 from django.db import transaction
+from django.db.utils import IntegrityError
 
 from ..api.serializers import PassengerPlaneSerializer, SeriesSerializer
-from ..helpers.errors import SerializingPlanesError, SerializingSeriesError
+from ..helpers.errors import PlaneReaderError, ReaderError, SerializingPlanesError, SerializingSeriesError
 
 
 class PlaneKeeper(ABC):
@@ -25,16 +26,19 @@ class DataPlaneKeeper(PlaneKeeper):
                 if k.startswith("series_"):
                     series_data[k[7:]] = v
             series_list.append(series_data)
-        with transaction.atomic():
-            s_serializer = SeriesSerializer(data=series_list, many=True)
-            if not s_serializer.is_valid():
-                raise SerializingSeriesError(s_serializer.errors)
-            s_serializer.save()
+        try:
+            with transaction.atomic():
+                s_serializer = SeriesSerializer(data=series_list, many=True)
+                if not s_serializer.is_valid():
+                    raise SerializingSeriesError(s_serializer.errors)
+                s_serializer.save()
 
-            p_serializer = PassengerPlaneSerializer(data=self.data, many=True)
-            if not p_serializer.is_valid():
-                raise SerializingPlanesError(p_serializer.errors)
-            p_serializer.save()
+                p_serializer = PassengerPlaneSerializer(data=self.data, many=True)
+                if not p_serializer.is_valid():
+                    raise SerializingPlanesError(p_serializer.errors)
+                p_serializer.save()
+        except IntegrityError as err:
+            raise PlaneReaderError(errs=err.args)
 
     def save_data(self) -> None | NoReturn:
         self.read_from_data()
@@ -56,5 +60,5 @@ def get_reader(data: IO | list) -> PlaneKeeper:
         reader = "data"
     except Exception as err:
         # For different parsing methods
-        raise err
+        raise ReaderError()
     return readers[reader](data)

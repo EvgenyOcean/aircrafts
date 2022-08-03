@@ -1,9 +1,9 @@
-from time import sleep
 from math import log10
 
 from model_bakery import baker
 from django.test import TestCase
 from django.db.utils import IntegrityError
+from rest_framework.test import APIClient
 
 from .models import Series, PassengerPlane
 from .helpers.roundings import round_down, round_up
@@ -62,3 +62,48 @@ class TestModels(TestCase):
         expected = round_down(self.plane_one.fuel_tank_capacity / self.plane_one.max_fuel_consumption)
         self.assertEqual(expected, self.plane_one.max_mins_in_flight)
         self.assertGreater(int(expected), 0)
+
+
+############################
+# Testing views real quick.
+############################
+class TestPlaneViewSet(TestCase):
+    def test_many_empty_values(self):
+        client = APIClient()
+        res = client.post(
+            '/api/v1/planes/many/', 
+            [], 
+            format='json')
+        self.assertEqual(res.status_code, 400)
+        
+    def test_many_expected_values(self):
+        client = APIClient()
+        res = client.post(
+            '/api/v1/planes/many/', 
+            [
+                {"series_code": 1, "series_name": "One", "capacity": 1},
+                {"series_code": 2, "series_name": "Two", "capacity": 20},
+                {"series_code": 3, "series_name": "Three", "capacity": 30},
+                {"series_code": 4, "series_name": "Four", "capacity": 4},
+                {"series_code": 5, "series_name": "Five", "capacity": 50},
+                {"series_code": 6, "series_name": "Sex", "capacity": 60},
+                {"series_code": 7, "series_name": "Seven", "capacity": 7},
+                {"series_code": 8, "series_name": "Eight", "capacity": 80},
+                {"series_code": 9, "series_name": "Nine", "capacity": 9},
+                {"series_code": 10, "series_name": "Ten", "capacity": 100}
+            ],
+            format='json')
+        self.assertEqual(res.status_code, 201)
+        self.assertEqual(Series.objects.count(), 10)
+        self.assertEqual(PassengerPlane.objects.count(), 10)
+
+    def test_many_duplicate_values(self):
+        client = APIClient()
+        res = client.post(
+            '/api/v1/planes/many/', 
+            [
+                {"series_code": 1, "series_name": "One", "capacity": 1},
+                {"series_code": 1, "series_name": "Four", "capacity": 4}
+            ],
+            format='json')
+        self.assertEqual(res.status_code, 400)
