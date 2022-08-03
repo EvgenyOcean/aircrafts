@@ -12,7 +12,11 @@ services:
     ports:
       - "5432:5432"
   planesapp:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./:/code
     command: bash -c "python manage.py runserver 0.0.0.0:8000"
     environment:
       - POSTGRES_NAME=planesdb

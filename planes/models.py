@@ -29,6 +29,11 @@ class Series(models.Model):
 
 
 class Plane(models.Model):
+    """
+    An abstract model. Because later we may be working
+    with military planes, cargo planes. All of them will have
+    name and series. Capacity is debatable tho.
+    """
     TANK_COEF = 200
     FUEL_PER_MINUTE_COEF = 0.8
     FUEL_INCREASED_PER_PERSON = 0.002

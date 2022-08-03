@@ -18,6 +18,9 @@ class PlaneKeeper(ABC):
 
 
 class DataPlaneKeeper(PlaneKeeper):
+    """
+    Handles json data.
+    """
     def read_from_data(self) -> None | NoReturn:
         series_list = []
         for datum in self.data:
@@ -45,6 +48,10 @@ class DataPlaneKeeper(PlaneKeeper):
 
 
 class FilePlaneKeeper(PlaneKeeper):
+    """
+    Handles files. We will allow to upload excel or word files,
+    the planes and their series can be read from.
+    """
     def read_from_data(self):
         pass
 
@@ -53,6 +60,10 @@ class FilePlaneKeeper(PlaneKeeper):
 
 
 def get_reader(data: IO | list) -> PlaneKeeper:
+    """
+    Factory method that creates a specific data handler
+    depending on the passed data type.
+    """
     readers = {"data": DataPlaneKeeper, "file": FilePlaneKeeper}
 
     try:

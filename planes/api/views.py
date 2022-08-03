@@ -10,7 +10,6 @@ from ..helpers.errors import PlaneReaderError
 from .serializers import PassengerPlaneSerializer, SeriesSerializer
 
 
-# Creat CRUD for series
 class SeriesViewSet(ModelViewSet):
     queryset = Series.objects.all()
     serializer_class = SeriesSerializer
@@ -22,6 +21,10 @@ class PlaneViewSet(ModelViewSet):
 
     @action(detail=False, methods=["post"])
     def many(self, request: Request):
+        """
+        Allows mulitple creation of series and planes at one place.
+        Purely for test task purposes.
+        """
         data = request.data
         reader = get_reader(data)
         try:
