@@ -3,7 +3,6 @@
 This is an application that allows you to assess offered airplanes. It calculates maximum minutes a plane can fly based on its characteristics.
 
 ## How to run
----
 ```bash
 # Running under production closed (not really tho) env.
 cd proj
@@ -15,7 +14,6 @@ docker-compose -f docker-compose.dev.yml up
 ```
 
 ## Structure
----
 In my mind I had the following criteria or deviations from the test task:
 - Each plane must have a series (1-M)
 - Depending on series, plane gets its `fuel_tank_capacity` (based on predefined formulas)
@@ -31,7 +29,6 @@ It allows us to have military and cargo planes. They are all, well, planes and s
 Having this we can easily (relatively :)) add assessing from excel or word files.
 
 ## How to use
----
 Head to the root api page: http://localhost:8000/api/v1/. From there you're good to go creating series and airplanes.
 
 There's an option to create multiple series and planes all at once (as was stated in the task, allowing user an input for 10 planes). Head to the http://localhost:8000/api/v1/planes/many/ url. From there you're expected to send json data.
@@ -53,7 +50,6 @@ Example:
 ```
 
 ## Testing
----
 There's 95% test coverage. Tests can be run with:
 ```bash
 # Entering the docker container
