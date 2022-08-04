@@ -11,6 +11,10 @@ docker-compose up
 # Running for development purposes.
 cd proj
 docker-compose -f docker-compose.dev.yml up
+
+# Migrate
+docker exec -it <container_name/id> /bin/bash
+python manage.py makemigrations && python manage.py migrate
 ```
 
 ## Structure
